@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+function chords() {
+    ls chords/
+}
+
+function pick() {
+    chords | sort -R | head -n 1
+}
+
+function main() {
+    local group_1=$(chords | grep -v 'm.wav$')
+    local group_2=$(chords | grep 'm.wav$')
+    local right=0
+    local wrong=0
+
+    clear
+
+    printf "Current score:\nRight: $right\nWrong: $wrong\n\n"
+
+    printf "Group 1:\n\t$(echo "$group_1" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
+    printf "Group 2:\n\t$(echo "$group_2" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
+
+    while :; do
+
+        chord=$(pick)
+        printf '\r\033[K'
+        printf "To which group does this sound belong? "
+        afplay "chords/$chord"
+        read -n 1 answer
+        answer="group_$answer"
+
+        clear
+
+        printf "Current score:\nRight: $right\nWrong: $wrong\n\n"
+
+        printf "Group 1:\n\t$(echo "$group_1" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
+        printf "Group 2:\n\t$(echo "$group_2" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
+
+        if [[ -z "$(echo "${!answer}" | grep $chord)" ]]; then
+            printf "Wrong answer, "
+            wrong=$(echo "$wrong + 1" | bc)
+        else
+            printf "Right answer, "
+            right=$(echo "$right + 1" | bc)
+        fi
+
+        printf "this chord was $(echo $chord | sed 's/.wav//g')\n\n"
+        read -s -p "Press any thing for the next on or 'q' to quit" -n 1 key
+
+        [[ "$key" == "q" ]] && break
+    done
+}
+
+main
