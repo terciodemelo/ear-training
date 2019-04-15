@@ -29,6 +29,8 @@ function main() {
         read -n 1 answer
         answer="group_$answer"
 
+        [[ "$answer" == "q" ]] && break
+
         if [[ -z "$(echo "${!answer}" | grep $chord)" ]]; then
             prefix="Wrong answer"
             wrong=$(echo "$wrong + 1" | bc)
@@ -39,15 +41,14 @@ function main() {
 
         clear
         printf "Current score:\nRight: $right\nWrong: $wrong\n\n"
-
         printf "Group 1:\n\t$(echo "$group_1" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
         printf "Group 2:\n\t$(echo "$group_2" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
+        printf "$prefix, this chord was $(echo $chord | sed 's/.wav//g')"
 
-        printf "$prefix, this chord was $(echo $chord | sed 's/.wav//g')\n\n"
-        read -s -p "Press any thing for the next on or 'q' to quit" -n 1 key
-
+        read -s -n 1 key
         [[ "$key" == "q" ]] && break
     done
+    echo ""
 }
 
 main
