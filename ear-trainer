@@ -22,7 +22,6 @@ function main() {
     printf "Group 2:\n\t$(echo "$group_2" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
 
     while :; do
-
         chord=$(pick)
         printf '\r\033[K'
         printf "To which group does this sound belong? "
@@ -30,22 +29,21 @@ function main() {
         read -n 1 answer
         answer="group_$answer"
 
-        clear
+        if [[ -z "$(echo "${!answer}" | grep $chord)" ]]; then
+            prefix="Wrong answer"
+            wrong=$(echo "$wrong + 1" | bc)
+        else
+            prefix="Right answer"
+            right=$(echo "$right + 1" | bc)
+        fi
 
+        clear
         printf "Current score:\nRight: $right\nWrong: $wrong\n\n"
 
         printf "Group 1:\n\t$(echo "$group_1" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
         printf "Group 2:\n\t$(echo "$group_2" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
 
-        if [[ -z "$(echo "${!answer}" | grep $chord)" ]]; then
-            printf "Wrong answer, "
-            wrong=$(echo "$wrong + 1" | bc)
-        else
-            printf "Right answer, "
-            right=$(echo "$right + 1" | bc)
-        fi
-
-        printf "this chord was $(echo $chord | sed 's/.wav//g')\n\n"
+        printf "$prefix, this chord was $(echo $chord | sed 's/.wav//g')\n\n"
         read -s -p "Press any thing for the next on or 'q' to quit" -n 1 key
 
         [[ "$key" == "q" ]] && break
