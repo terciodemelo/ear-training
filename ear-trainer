@@ -8,16 +8,22 @@ function pick() {
     chords | sort -R | head -n 1
 }
 
+function minor() {
+    chords | grep 'm.wav$'
+}
+
+function major() {
+    chords | grep -v 'm.wav$'
+}
+
 function main() {
-    local group_1=$(chords | grep -v 'm.wav$')
-    local group_2=$(chords | grep 'm.wav$')
+    local group_1=$(major)
+    local group_2=$(minor)
     local right=0
     local wrong=0
 
     clear
-
-    printf "Current score:\nRight: $right\nWrong: $wrong\n\n"
-
+    printf "Right: $right\nWrong: $wrong\n\n"
     printf "Group 1:\n\t$(echo "$group_1" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
     printf "Group 2:\n\t$(echo "$group_2" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
 
@@ -38,9 +44,13 @@ function main() {
             prefix="Right answer"
             right=$(echo "$right + 1" | bc)
         fi
+        total=$(echo "$right + $wrong" | bc)
+        percentage="$(echo "scale=2; $right/$total" | bc | sed 's/\.//g')%%"
+
+        echo $percentage
 
         clear
-        printf "Current score:\nRight: $right\nWrong: $wrong\n\n"
+        printf "Right: $right\nWrong: $wrong\nRate: $percentage\n\n"
         printf "Group 1:\n\t$(echo "$group_1" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
         printf "Group 2:\n\t$(echo "$group_2" | sed 's/.wav//g' | tr '\n' ' ')\n\n"
         printf "$prefix, this chord was $(echo $chord | sed 's/.wav//g')"
