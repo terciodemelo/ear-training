@@ -26,10 +26,10 @@ function main() {
         printf '\r\033[K'
         printf "To which group does this sound belong? "
         afplay "chords/$chord"
-        read -n 1 answer
-        answer="group_$answer"
 
+        read -n 1 answer
         [[ "$answer" == "q" ]] && break
+        answer="group_$answer"
 
         if [[ -z "$(echo "${!answer}" | grep $chord)" ]]; then
             prefix="Wrong answer"
